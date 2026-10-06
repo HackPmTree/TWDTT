@@ -496,7 +496,7 @@ setup_admin_tls() {
         openssl req -x509 -newkey rsa:2048 -sha256 -nodes -days 3650 \
             -keyout "$WDTT_CONFIG_DIR/admin.key" \
             -out "$WDTT_CONFIG_DIR/admin.crt" \
-            -subj "/CN=qwdtt-admin" >/dev/null 2>&1 || die "Не удалось создать TLS-сертификат"
+            -subj "/CN=meshwdtt-admin" >/dev/null 2>&1 || die "Не удалось создать TLS-сертификат"
     fi
     chmod 0600 "$WDTT_CONFIG_DIR/admin.key" "$WDTT_CONFIG_DIR/admin.crt"
     local pin

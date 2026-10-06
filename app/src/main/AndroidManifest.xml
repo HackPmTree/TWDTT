@@ -13,10 +13,10 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <application
-        android:name=".WdttApplication"
+        android:name="com.meshwdtt.client.MeshWDTTApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
-        android:label="qWDTT"
+        android:label="MESHWDTT"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
@@ -24,7 +24,7 @@
         android:theme="@style/Theme.WDTTClient">
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.meshwdtt.client.MainActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:launchMode="singleTask"
@@ -40,11 +40,16 @@
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
             </intent-filter>
-            <!-- Открытие .qwdtt файлов -->
+            <!-- Открытие .meshwdtt файлов (и легаси .qwdtt) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="application/octet-stream" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.meshwdtt" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -72,16 +77,35 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="content" />
             </intent-filter>
+            <!-- Deep-link meshwdtt://config (и легаси qwdtt://, wdtt://) -->
+            <intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="meshwdtt" android:host="config" />
+            </intent-filter>
+            <intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="qwdtt" android:host="config" />
+            </intent-filter>
+            <intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="wdtt" android:host="config" />
+            </intent-filter>
         </activity>
 
         <activity
-            android:name=".VpnPermissionActivity"
+            android:name="com.meshwdtt.client.VpnPermissionActivity"
             android:excludeFromRecents="true"
             android:exported="false"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <service
-            android:name=".TunnelService"
+            android:name="com.meshwdtt.client.tunnel.TunnelService"
             android:exported="false"
             android:foregroundServiceType="specialUse"
             android:stopWithTask="false">
@@ -91,7 +115,7 @@
         </service>
 
         <service
-            android:name=".RawTunVpnService"
+            android:name="com.meshwdtt.client.tunnel.RawTunVpnService"
             android:exported="false"
             android:permission="android.permission.BIND_VPN_SERVICE">
             <intent-filter>
@@ -99,36 +123,35 @@
             </intent-filter>
         </service>
 
-
         <activity
-            android:name=".ManlCaptchaActivity"
+            android:name="com.meshwdtt.client.vk.ManlCaptchaActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize"
             android:exported="false" />
 
         <activity
-            android:name=".VkAuthActivity"
+            android:name="com.meshwdtt.client.vk.VkAuthActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize"
             android:exported="false" />
 
         <receiver
-            android:name=".VkAuthCancelReceiver"
+            android:name="com.meshwdtt.client.vk.VkAuthCancelReceiver"
             android:exported="false" />
 
         <receiver
-            android:name=".CaptchaCancelReceiver"
+            android:name="com.meshwdtt.client.vk.CaptchaCancelReceiver"
             android:exported="false" />
 
         <receiver
-            android:name=".TunnelWidgetProvider"
-            android:label="qWDTT Туннель"
+            android:name="com.meshwdtt.client.TunnelWidgetProvider"
+            android:label="MESHWDTT Туннель"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="net.qwdtt.client.ACTION_TOGGLE" />
+                <action android:name="net.meshwdtt.client.ACTION_TOGGLE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
@@ -136,8 +159,8 @@
         </receiver>
 
         <service
-            android:name=".QuickToggleTileService"
-            android:label="qWDTT"
+            android:name="com.meshwdtt.client.QuickToggleTileService"
+            android:label="MESHWDTT"
             android:icon="@drawable/ic_tile_custom"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
             android:exported="true">
@@ -155,7 +178,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-            
+
     </application>
 
 </manifest>

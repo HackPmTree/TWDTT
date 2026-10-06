@@ -942,7 +942,7 @@ func botLoop(token string, adminIDstr string, wgDev *device.Device) {
 					if exists && entry != nil {
 						srvIP := getPublicIP()
 						configJSON := fmt.Sprintf(`{
-  "name": "qWDTT - %s",
+  "name": "MESHWDTT - %s",
   "peer": "%s",
   "vkHashes": "%s",
   "workersPerHash": 9,
@@ -951,7 +951,7 @@ func botLoop(token string, adminIDstr string, wgDev *device.Device) {
 }`, srvIP, srvIP, entry.VkHash, pass)
 						dbMutex.Unlock()
 
-						fileName := fmt.Sprintf("qwdtt_%s.conf", pass)
+						fileName := fmt.Sprintf("meshwdtt_%s.conf", pass)
 						sendTelegramFile(token, adminID, fileName, []byte(configJSON))
 					} else {
 						dbMutex.Unlock()
@@ -1139,24 +1139,24 @@ func botLoop(token string, adminIDstr string, wgDev *device.Device) {
 					pts := strings.Split(tempPorts, ",")
 					link := fmt.Sprintf("wdtt://%s:%s:%s:%s:%s:%s", srvIP, pts[0], pts[1], pts[2], db.MainPassword, hash)
 
-					nameEsc := neturl.QueryEscape(fmt.Sprintf("qWDTT - Main (%s)", srvIP))
+					nameEsc := neturl.QueryEscape(fmt.Sprintf("MESHWDTT - Main (%s)", srvIP))
 					peerEsc := neturl.QueryEscape(srvIP)
 					hashesEsc := neturl.QueryEscape(hash)
 					passEsc := neturl.QueryEscape(db.MainPassword)
-					qwdttLink := fmt.Sprintf("qwdtt://config?name=%s&peer=%s&hashes=%s&workers=9&port=9000&pass=%s", nameEsc, peerEsc, hashesEsc, passEsc)
+					meshwdttLink := fmt.Sprintf("meshwdtt://config?name=%s&peer=%s&hashes=%s&workers=9&port=9000&pass=%s", nameEsc, peerEsc, hashesEsc, passEsc)
 
-					msgText := fmt.Sprintf("🔗 *Ссылка для главного пароля:*\n`%s`\n\n🔗 *Быстрая ссылка qWDTT:* `%s`", link, qwdttLink)
+					msgText := fmt.Sprintf("🔗 *Ссылка для главного пароля:*\n`%s`\n\n🔗 *Быстрая ссылка MESHWDTT:* `%s`", link, meshwdttLink)
 					sendTelegram(token, adminID, msgText, nil)
 
 					configJSON := fmt.Sprintf(`{
-  "name": "qWDTT - Main (%s)",
+  "name": "MESHWDTT - Main (%s)",
   "peer": "%s",
   "vkHashes": "%s",
   "workersPerHash": 9,
   "listenPort": 9000,
   "password": "%s"
 }`, srvIP, srvIP, hash, db.MainPassword)
-					fileName := fmt.Sprintf("qwdtt_main_%s.conf", srvIP)
+					fileName := fmt.Sprintf("meshwdtt_main_%s.conf", srvIP)
 					sendTelegramFile(token, adminID, fileName, []byte(configJSON))
 					continue
 				}
@@ -1212,9 +1212,9 @@ func botLoop(token string, adminIDstr string, wgDev *device.Device) {
 				peerEsc := neturl.QueryEscape(srvIP)
 				hashesEsc := neturl.QueryEscape(hash)
 				passEsc := neturl.QueryEscape(newPass)
-				qwdttLink := fmt.Sprintf("qwdtt://config?name=%s&peer=%s&hashes=%s&workers=9&port=9000&pass=%s", nameEsc, peerEsc, hashesEsc, passEsc)
+				meshwdttLink := fmt.Sprintf("meshwdtt://config?name=%s&peer=%s&hashes=%s&workers=9&port=9000&pass=%s", nameEsc, peerEsc, hashesEsc, passEsc)
 
-				msgText := fmt.Sprintf("👤 Имя: *%s*\n🔑 Новый пароль:\n`%s`\n\n⏰ Действует %d дн. (до %s)\n📱 Лимит: %d устройств\nОжидает первого подключения\n\n🔗 *Быстрая ссылка qWDTT:* `%s`\n\n🔗 *Legacy ссылка:* `%s`", newLabel, newPass, tempDays, expDate, tempMaxDevs, qwdttLink, link)
+				msgText := fmt.Sprintf("👤 Имя: *%s*\n🔑 Новый пароль:\n`%s`\n\n⏰ Действует %d дн. (до %s)\n📱 Лимит: %d устройств\nОжидает первого подключения\n\n🔗 *Быстрая ссылка MESHWDTT:* `%s`\n\n🔗 *Legacy ссылка:* `%s`", newLabel, newPass, tempDays, expDate, tempMaxDevs, meshwdttLink, link)
 				sendTelegram(token, adminID, msgText, nil)
 
 				configJSON := fmt.Sprintf(`{
@@ -1225,13 +1225,13 @@ func botLoop(token string, adminIDstr string, wgDev *device.Device) {
   "listenPort": 9000,
   "password": "%s"
 }`, newLabel, srvIP, hash, newPass)
-				fileName := fmt.Sprintf("qwdtt_%s.conf", newPass)
+				fileName := fmt.Sprintf("meshwdtt_%s.conf", newPass)
 				sendTelegramFile(token, adminID, fileName, []byte(configJSON))
 				continue
 			}
 
 			if cmd == "/start" || cmd == "/help" {
-				sendTelegram(token, adminID, "🤖 *qWDTT VPN Manager*\n\n/new — Создать пароль\n/list — Список паролей", nil)
+				sendTelegram(token, adminID, "🤖 *MESHWDTT VPN Manager**\n\n/new — Создать пароль\n/list — Список паролей", nil)
 
 			} else if strings.HasPrefix(cmd, "/new ") || cmd == "/new" {
 				args := strings.Fields(strings.TrimPrefix(cmd, "/new"))
