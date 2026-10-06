@@ -22,8 +22,8 @@ android {
         applicationId = "net.meshwdtt.client"
         minSdk = 28
         targetSdk = 35
-        versionCode = 42
-        versionName = "1.4.4"
+        versionCode = 43
+        versionName = "1.5.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

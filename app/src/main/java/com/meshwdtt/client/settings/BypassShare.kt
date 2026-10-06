@@ -9,7 +9,9 @@ import org.json.JSONObject
  * Обмен настройками обхода VPN (домены/IP и/или исключения приложений).
  */
 object BypassShare {
-    const val FORMAT = "qwdtt-bypass"
+    const val FORMAT = "meshwdtt-bypass"
+    /** Легаси-значение формата, создавалось старыми сборками — принимается при импорте. */
+    const val LEGACY_FORMAT = "qwdtt-bypass"
     const val FORMAT_VERSION = 1
 
     enum class Scope {
@@ -43,7 +45,7 @@ object BypassShare {
         return runCatching {
             val root = JSONObject(text)
             val format = root.optString("format", "")
-            if (format.isNotEmpty() && format != FORMAT) {
+            if (format.isNotEmpty() && format != FORMAT && format != LEGACY_FORMAT) {
                 throw IllegalArgumentException("format")
             }
             if (!root.has("bypassRoutes") && !root.has("excludedApps")) {
@@ -106,7 +108,7 @@ object BypassShare {
         val text = raw.trim().removePrefix("\uFEFF")
         val root = runCatching { JSONObject(text) }.getOrNull()
         val format = root?.optString("format", "").orEmpty()
-        if (format.isNotEmpty() && format != FORMAT) {
+        if (format.isNotEmpty() && format != FORMAT && format != LEGACY_FORMAT) {
             throw IllegalArgumentException("Это не файл обхода MESHWDTT (format=$format)")
         }
 
