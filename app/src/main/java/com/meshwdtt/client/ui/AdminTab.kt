@@ -227,7 +227,7 @@ fun AccessListScreen(server: ManagedServer, onBack: () -> Unit) {
                             }
                         }
                     },
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(16.dp),
                 )
 
                 errorMessage?.let { msg ->
@@ -350,7 +350,6 @@ fun AccessListScreen(server: ManagedServer, onBack: () -> Unit) {
                         errorMessage = result.message
                     } else {
                         editEntry = null
-                        // detailsEntry могла быть открыта под этой формой — обновим её тоже.
                         (result as? AdminApiClient.Result.Success)?.value?.let { detailsEntry = it }
                     }
                     refresh()
@@ -423,9 +422,6 @@ private fun AdminPasswordCard(
         "бессрочно"
     }
 
-    // Заголовок — label, если он есть, иначе сам пароль. Строку с паролем
-    // ниже показываем только когда заголовок — это НЕ пароль (иначе одна и
-    // та же строка дублировалась бы дважды подряд).
     val hasDistinctLabel = entry.label.isNotBlank()
     val titleText = if (hasDistinctLabel) entry.label else entry.password
 
@@ -448,7 +444,7 @@ private fun AdminPasswordCard(
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
                         softWrap = false,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false),
                     )
                     if (entry.isDeactivated) {
@@ -468,7 +464,7 @@ private fun AdminPasswordCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                         softWrap = false,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }
@@ -520,7 +516,7 @@ private fun AdminPasswordCard(
                             if (entry.isDeactivated) "Включить" else "Выключить",
                             maxLines = 1,
                             softWrap = false,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Visible,
+                            overflow = TextOverflow.Visible,
                             style = MaterialTheme.typography.labelLarge,
                         )
                     }
@@ -546,7 +542,7 @@ private fun AdminPasswordCard(
                             "Удалить",
                             maxLines = 1,
                             softWrap = false,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Visible,
+                            overflow = TextOverflow.Visible,
                             style = MaterialTheme.typography.labelLarge,
                         )
                     }
@@ -561,7 +557,7 @@ private fun StatusChip(text: String, color: Color) {
     Surface(
         color = color.copy(alpha = 0.16f),
         contentColor = color,
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(8.dp),
     ) {
         Text(
             text,
@@ -587,7 +583,7 @@ private fun InfoStat(label: String, value: String, modifier: Modifier = Modifier
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             softWrap = false,
-            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }
@@ -598,13 +594,6 @@ private fun formatBytes(bytes: Long): String {
     return if (mb >= 1024) "%.2f ГБ".format(mb / 1024.0) else "%.1f МБ".format(mb)
 }
 
-/**
- * Форма создания/редактирования пароля доступа — один и тот же UI для
- * обоих случаев, различается только заголовком/кнопкой и тем, что при
- * редактировании поля предзаполнены текущими значениями. days трактуется
- * как "продлить ещё на N дней от сейчас" в обоих случаях — так же, как
- * работает /new в Telegram-боте.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PasswordFormSheet(
@@ -615,10 +604,6 @@ private fun PasswordFormSheet(
     val isEdit = existing != null
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var label by rememberSaveable(existing?.password) { mutableStateOf(existing?.label.orEmpty()) }
-    // Сервер хранит и принимает несколько VK-хешей одной строкой через
-    // запятую (см. go_client/group.go ParseHashes) — в форме это список для
-    // удобного добавления/удаления по одному, при отправке склеивается
-    // обратно в CSV-строку, формат на проводе не меняется.
     var hashList by rememberSaveable(existing?.password) {
         mutableStateOf(
             existing?.vkHash.orEmpty()
@@ -745,12 +730,6 @@ private fun PasswordFormSheet(
     }
 }
 
-/**
- * Клик по карточке — сразу готовые ссылки MESHWDTT (meshwdtt://config, наш
- * основной формат с QR) и легаси WDTT (wdtt://host:port:port:port:pass:hash,
- * см. parseQrConfig в ProfilesTab.kt) плюс QR-код на первую из них, чтобы
- * не объяснять человеку вручную, что вводить в приложение.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PasswordDetailsSheet(
@@ -777,10 +756,7 @@ private fun PasswordDetailsSheet(
         val passEsc = URLEncoder.encode(entry.password, "UTF-8")
         "meshwdtt://config?name=$nameEsc&peer=$peerEsc&hashes=$hashesEsc&workers=18&port=9000&pass=$passEsc"
     }
-    val meshWDTTLink = remember(entry, host, port) {
-        // wdtt://<server_ip>:<dtls_port>:<wg_port>:<local_port>:<password>:<vk_hash>
-        // wg_port/local_port тут неизвестны админ-API — используем те же
-        // дефолты, что и остальной клиент (56001/9000).
+    val legacyWdttLink = remember(entry, host, port) {
         "wdtt://$host:$port:56001:9000:${entry.password}:${entry.vkHash}"
     }
 
@@ -805,7 +781,7 @@ private fun PasswordDetailsSheet(
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
-                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
                 )
                 IconButton(onClick = onEdit) {
@@ -849,9 +825,9 @@ private fun PasswordDetailsSheet(
             )
             LinkRow(
                 label = "Ссылка WDTT (легаси)",
-                value = meshWDTTLink,
+                value = legacyWdttLink,
                 onCopy = {
-                    clipboard.setText(AnnotatedString(meshWDTTLink))
+                    clipboard.setText(AnnotatedString(legacyWdttLink))
                 },
             )
 
@@ -895,7 +871,7 @@ private fun PasswordDetailsSheet(
                                 style = MaterialTheme.typography.bodySmall,
                                 fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
                                 maxLines = 1,
-                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier.weight(1f),
                             )
                             if (unbindingDeviceId == deviceId) {
@@ -951,7 +927,7 @@ private fun LinkRow(label: String, value: String, onCopy: () -> Unit) {
                 fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
                 maxLines = 1,
                 softWrap = false,
-                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
             )
             IconButton(onClick = onCopy, modifier = Modifier.size(36.dp)) {
@@ -965,3 +941,6 @@ private fun LinkRow(label: String, value: String, onCopy: () -> Unit) {
         }
     }
 }
+
+// The rest of the original file is kept as-is. This file intentionally contains the app screen
+// and helper UI functions used by AccessListScreen.

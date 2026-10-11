@@ -15,21 +15,21 @@ android {
         ?.ifEmpty { null }
         ?: listOf("arm64-v8a", "armeabi-v7a", "x86_64")
 
-    namespace = "com.meshwdtt.client"   
+    namespace = "com.meshwdtt.client"
     compileSdk = 35
-    
+
     defaultConfig {
         applicationId = "net.meshwdtt.client"
         minSdk = 28
         targetSdk = 35
         versionCode = 43
         versionName = "1.5.0"
+        buildConfigField("String", "UPDATES_REPO", "\"HackPmTree/TWDTT\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
-
     }
 
     splits {
@@ -51,9 +51,7 @@ android {
         create("release") {
             val keyFile = localProperties.getProperty("KEYSTORE_FILE")
             if (keyFile != null) {
-                // Резолвим путь: если начинается с "..", берём от корня проекта
                 val resolvedFile = if (keyFile.startsWith("..")) {
-                    // ../release.keystore -> корень проекта / release.keystore
                     file(rootDir.resolve(keyFile.substring(3)))
                 } else {
                     file(keyFile)
@@ -87,7 +85,7 @@ android {
             } else if (keyFile != null) {
                 file(keyFile)
             } else null
-            
+
             if (resolvedFile != null && resolvedFile.exists()) {
                 signingConfig = signingConfigs.getByName("release")
                 println("✅ Signing config applied: ${resolvedFile.absolutePath}")
